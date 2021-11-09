@@ -18,6 +18,8 @@ class Katakana implements Rule
      */
     public function passes($attribute, $value)
     {
+        $value = mb_convert_kana($value, 'KV');
+
         return ! preg_match('/[^\p{Katakana}ー]+/ux', $value);
     }
 
