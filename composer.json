@@ -1,0 +1,33 @@
+{
+    "name": "rabianr/laravel-validation-japanese",
+    "description": "Japanese validation rules for Laravel",
+    "authors": [
+        {
+            "name": "ラ・ビ・アン・ローズ"
+        }
+    ],
+    "license": "MIT",
+    "require": {
+        "php": ">= 7.2",
+        "illuminate/support": "^6|^7|^8|^9",
+        "illuminate/contracts": "^6|^7|^8|^9"
+    },
+    "require-dev": {
+        "laravel/framework": "^6|^7|^8",
+        "phpunit/phpunit": "^6|^7|^8|^9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rabianr\\Validation\\Japanese\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+              "Rabianr\\Validation\\Japanese\\ServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
