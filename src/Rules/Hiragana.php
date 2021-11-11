@@ -10,6 +10,24 @@ use Illuminate\Contracts\Validation\Rule;
 class Hiragana implements Rule
 {
     /**
+     * Additional characters that will be allowed
+     *
+     * @var string
+     */
+    protected $allowChars;
+
+    /**
+     * Create a new rule instance.
+     *
+     * @param  string  $allowChars  Additional characters that will be allowed.
+     * @return void
+     */
+    public function __construct($allowChars = '')
+    {
+        $this->allowChars = $allowChars;
+    }
+
+    /**
      * Determine if the validation rule passes.
      *
      * @param  string  $attribute
@@ -18,7 +36,7 @@ class Hiragana implements Rule
      */
     public function passes($attribute, $value)
     {
-        return ! preg_match('/[^\p{Hiragana}]+/ux', $value);
+        return ! preg_match("/[^\p{Hiragana}{$this->allowChars}]+/ux", $value);
     }
 
     /**

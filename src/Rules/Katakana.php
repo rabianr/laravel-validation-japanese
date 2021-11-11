@@ -10,6 +10,24 @@ use Illuminate\Contracts\Validation\Rule;
 class Katakana implements Rule
 {
     /**
+     * Additional characters that will be allowed
+     *
+     * @var string
+     */
+    protected $allowChars;
+
+    /**
+     * Create a new rule instance.
+     *
+     * @param  string  $allowChars  Additional characters that will be allowed.
+     * @return void
+     */
+    public function __construct($allowChars = '')
+    {
+        $this->allowChars = $allowChars;
+    }
+
+    /**
      * Determine if the validation rule passes.
      *
      * @param  string  $attribute
@@ -20,7 +38,7 @@ class Katakana implements Rule
     {
         $value = mb_convert_kana($value, 'KV');
 
-        return ! preg_match('/[^\p{Katakana}ー]+/ux', $value);
+        return ! preg_match("/[^\p{Katakana}ー{$this->allowChars}]+/ux", $value);
     }
 
     /**
