@@ -40,10 +40,10 @@ class Kanji extends Rule
     public function passes($attribute, $value)
     {
         $denied = preg_match_all("/[^\p{Han}{$this->allowChars}]+/ux", $value, $matches);
-        $kanjis = str_replace($matches[0], '', $value);
 
-        if ($this->JISX0208 && $kanjis) {
-            $kanjis = mb_convert_encoding($kanjis, 'sjis-win', 'utf-8');
+        if ($this->JISX0208 && ! $denied) {
+            preg_match_all('/\p{Han}+/ux', $value, $m);
+            $kanjis = mb_convert_encoding(implode('', $m[0]), 'sjis-win', 'utf-8');
 
             $origRegexEncoding = mb_regex_encoding();
             mb_regex_encoding('sjis-win');

@@ -42,11 +42,12 @@ $validator = Validator::make($request->all(), [
 
 ## Available Rules
 
-| Class | Constructor |
-| ----- | ----------- |
-| Rabianr\Validation\Japanese\Rules\Hiragana | __construct($allowChars = '') |
-| Rabianr\Validation\Japanese\Rules\Katakana | __construct($allowChars = '') |
-| Rabianr\Validation\Japanese\Rules\Kanji | __construct($allowChars = '', $JISX0208 = false) |
+| Class | Constructor | Usage |
+| ----- | ----------- | ----- |
+| Rabianr\Validation\Japanese\Rules\Hiragana | __construct($allowChars = '') | The field under validation must be Hiragana and ```$allowChars``` only. |
+| Rabianr\Validation\Japanese\Rules\Katakana | __construct($allowChars = '') | The field under validation must be Katakana and ```$allowChars``` only. |
+| Rabianr\Validation\Japanese\Rules\Kanji | __construct($allowChars = '', $JISX0208 = false) | The field under validation must be Kanji and ```$allowChars``` only. If ```$JISX0208``` is ```true```, Kanji must be Level 1 and 2. |
+| Rabianr\Validation\Japanese\Rules\KanjiJISX0208 | __construct() | If the field under validation contains Kanji, must be Level 1 and 2 only. |
 
 ## Trims full-width whitespace Middleware
 ```php
