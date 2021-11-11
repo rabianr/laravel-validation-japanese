@@ -2,29 +2,32 @@
 
 namespace Rabianr\Validation\Japanese\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
-
 /**
  * Validate Kanji
  */
-class Kanji implements Rule
+class Kanji extends Rule
 {
     /**
-     * Additional characters that will be allowed
+     * Allow level 1, level 2 Kanji only.
      *
-     * @var string
+     * @var bool
      */
-    protected $allowChars;
+    protected bool $JISX0208 = false;
 
     /**
      * Create a new rule instance.
      *
-     * @param  string  $allowChars  Additional characters that will be allowed.
+     * @param  string|array  $allowChars  Additional characters that will be allowed.
+     * @param  bool          $JISX0208    Allow level 1, level 2 Kanji only.
      * @return void
      */
-    public function __construct($allowChars = '')
+    public function __construct($allowChars = '', $JISX0208 = false)
     {
-        $this->allowChars = $allowChars;
+        parent::__construct($allowChars);
+
+        $this->JISX0208 = $JISX0208;
+        $this->charType = __('japaneseValidation::validation.type.kanji');
+        $this->setMessage(__('japaneseValidation::validation.kanji'));
     }
 
     /**
@@ -36,16 +39,31 @@ class Kanji implements Rule
      */
     public function passes($attribute, $value)
     {
-        return ! preg_match("/[^\p{Han}{$this->allowChars}]+/ux", $value);
-    }
+        $denied = preg_match_all("/[^\p{Han}{$this->allowChars}]+/ux", $value, $matches);
+        $kanjis = str_replace($matches[0], '', $value);
 
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message()
-    {
-        return __('japaneseValidation::validation.kanji');
+        if ($this->JISX0208 && $kanjis) {
+            $kanjis = mb_convert_encoding($kanjis, 'sjis-win', 'utf-8');
+
+            $origRegexEncoding = mb_regex_encoding();
+            mb_regex_encoding('sjis-win');
+
+            // Determine if not Level 1, Level 2 kanji
+            if (mb_ereg('[^\x{889F}-\x{9872}\x{989F}-\x{EAA4}]+', $kanjis)) {
+                mb_regex_encoding($origRegexEncoding);
+
+                $this->message = __('japaneseValidation::validation.kanji_jisx0208');
+
+                return false;
+            }
+
+            mb_regex_encoding($origRegexEncoding);
+        }
+
+        if ($denied) {
+            return $this->passesAllowedRules($attribute, implode('', $matches[0]));
+        }
+
+        return true;
     }
 }

@@ -2,29 +2,23 @@
 
 namespace Rabianr\Validation\Japanese\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
-
 /**
  * Validate Hiragana
  */
-class Hiragana implements Rule
+class Hiragana extends Rule
 {
-    /**
-     * Additional characters that will be allowed
-     *
-     * @var string
-     */
-    protected $allowChars;
-
     /**
      * Create a new rule instance.
      *
-     * @param  string  $allowChars  Additional characters that will be allowed.
+     * @param  string|array  $allowChars  Additional characters that will be allowed.
      * @return void
      */
     public function __construct($allowChars = '')
     {
-        $this->allowChars = $allowChars;
+        parent::__construct($allowChars);
+
+        $this->charType = __('japaneseValidation::validation.type.hiragana');
+        $this->setMessage(__('japaneseValidation::validation.hiragana'));
     }
 
     /**
@@ -36,16 +30,12 @@ class Hiragana implements Rule
      */
     public function passes($attribute, $value)
     {
-        return ! preg_match("/[^\p{Hiragana}{$this->allowChars}]+/ux", $value);
-    }
+        $denied = preg_match_all("/[^\p{Hiragana}{$this->allowChars}]+/ux", $value, $matches);
 
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message()
-    {
-        return __('japaneseValidation::validation.hiragana');
+        if ($denied) {
+            return $this->passesAllowedRules($attribute, implode('', $matches[0]));
+        }
+
+        return true;
     }
 }

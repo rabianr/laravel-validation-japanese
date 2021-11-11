@@ -2,29 +2,23 @@
 
 namespace Rabianr\Validation\Japanese\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
-
 /**
  * Validate Katakana
  */
-class Katakana implements Rule
+class Katakana extends Rule
 {
-    /**
-     * Additional characters that will be allowed
-     *
-     * @var string
-     */
-    protected $allowChars;
-
     /**
      * Create a new rule instance.
      *
-     * @param  string  $allowChars  Additional characters that will be allowed.
+     * @param  string|array  $allowChars  Additional characters that will be allowed.
      * @return void
      */
     public function __construct($allowChars = '')
     {
-        $this->allowChars = $allowChars;
+        parent::__construct($allowChars);
+
+        $this->charType = __('japaneseValidation::validation.type.katakana');
+        $this->setMessage(__('japaneseValidation::validation.katakana'));
     }
 
     /**
@@ -38,16 +32,12 @@ class Katakana implements Rule
     {
         $value = mb_convert_kana($value, 'KV');
 
-        return ! preg_match("/[^\p{Katakana}ー{$this->allowChars}]+/ux", $value);
-    }
+        $denied = preg_match_all("/[^\p{Katakana}ー{$this->allowChars}]+/ux", $value, $matches);
 
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message()
-    {
-        return __('japaneseValidation::validation.katakana');
+        if ($denied) {
+            return $this->passesAllowedRules($attribute, implode('', $matches[0]));
+        }
+
+        return true;
     }
 }
