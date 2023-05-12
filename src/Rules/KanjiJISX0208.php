@@ -19,19 +19,10 @@ class KanjiJISX0208 implements Rule
     public function passes($attribute, $value)
     {
         if (preg_match_all('/\p{Han}+/ux', $value, $m)) {
-            $kanjis = mb_convert_encoding(implode('', $m[0]), 'sjis-win', 'utf-8');
+            $kanjis = implode('', $m[0]);
 
-            $origRegexEncoding = mb_regex_encoding();
-            mb_regex_encoding('sjis-win');
-
-            // Determine if not Level 1, Level 2 kanji
-            if (mb_ereg('[^\x{889F}-\x{9872}\x{989F}-\x{EAA4}]+', $kanjis)) {
-                mb_regex_encoding($origRegexEncoding);
-
-                return false;
-            }
-
-            mb_regex_encoding($origRegexEncoding);
+            return $kanjis === mb_convert_encoding(
+                mb_convert_encoding($kanjis, 'ISO-2022-JP', 'UTF-8'), 'UTF-8', 'ISO-2022-JP');
         }
 
         return true;

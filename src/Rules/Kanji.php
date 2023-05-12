@@ -42,22 +42,9 @@ class Kanji extends Rule
         $denied = preg_match_all("/[^\p{Han}{$this->allowChars}]+/ux", $value, $matches);
 
         if ($this->JISX0208 && ! $denied) {
-            preg_match_all('/\p{Han}+/ux', $value, $m);
-            $kanjis = mb_convert_encoding(implode('', $m[0]), 'sjis-win', 'utf-8');
-
-            $origRegexEncoding = mb_regex_encoding();
-            mb_regex_encoding('sjis-win');
-
-            // Determine if not Level 1, Level 2 kanji
-            if (mb_ereg('[^\x{889F}-\x{9872}\x{989F}-\x{EAA4}]+', $kanjis)) {
-                mb_regex_encoding($origRegexEncoding);
-
-                $this->message = __('japaneseValidation::validation.kanji_jisx0208');
-
-                return false;
+            if ($denied = ! (new KanjiJISX0208)->passes($attribute, $value)) {
+                $this->setMessage(__('japaneseValidation::validation.kanji_jisx0208'));
             }
-
-            mb_regex_encoding($origRegexEncoding);
         }
 
         if ($denied) {
